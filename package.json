@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@huggingface/inference": "^2.8.1",
+    "axios": "^1.7.9",
+    "body-parser": "^1.20.3",
+    "compromise": "^14.14.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "node-nlp": "^5.0.0-alpha.4",
+    "openai": "^4.77.4",
+    "pg": "^8.13.1"
+  }
+}
