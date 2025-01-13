@@ -72,7 +72,7 @@ app.post('/entrenar', async (req, res) => {
         );
 
         await preguntas.forEach(async (pregunta) => {
-          await new Promise(resolve => setTimeout(resolve, 60000));
+          await new Promise(resolve => setTimeout(resolve, 5000));
           const variaciones = await generarVariaciones(pregunta);
           variaciones.forEach(async (variacion) => {
               await pool.query(
