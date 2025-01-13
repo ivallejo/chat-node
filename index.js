@@ -5,7 +5,7 @@ const axios = require('axios');
 const cors = require('cors');
 
 const app = express();
-const port = 3001;
+const PORT = process.env.PORT || 3000;
 const manager = new NlpManager({ languages: ['es'] });
 
 const API_KEY = process.env.HF_TOKEN;;
@@ -180,6 +180,6 @@ app.get('/variaciones', async (req, res) => {
     }
 })();
 
-app.listen(port, () => {
-    console.log(`Servidor corriendo en http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
