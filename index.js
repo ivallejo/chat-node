@@ -121,6 +121,7 @@ app.get('/entrenamientos', async (req, res) => {
 });
 
 app.get('/consultar', async (req, res) => {
+  const sessionId = req.headers['x-session-id'];
   const pregunta = req.query.consulta;
   const session = req.session;
 
@@ -128,6 +129,7 @@ app.get('/consultar', async (req, res) => {
       return res.status(400).json({ message: 'La pregunta es requerida' });
   }
 
+  let respuesta = []
   try {
       if(session.esperandoNombre) {
           const response = await managerPresentacion.process('es', pregunta);
@@ -150,43 +152,55 @@ app.get('/consultar', async (req, res) => {
 
           if (blnPresentation) {
             session.esperandoNombre = false;
-            if (nombre) {
-              session.nombre = nombre;
-              session.esperandoNombre = false;
+            session.nombre = nombre || pregunta;
 
-              return res.status(200).json({ respuesta: [`¡Hola, ${nombre}! Encantado de conocerte. ¿Cómo puedo ayudarte?`] });
+            const insertResult = await pool.query(
+              'INSERT INTO usuarios (nombre, session_id) VALUES ($1, $2) RETURNING id',
+              [session.nombre, sessionId]
+            );
+
+            if (nombre) {
+              respuesta.push(`¡Hola, ${nombre}! Encantado de conocerte. ¿Cómo puedo ayudarte?`)
             } else {
-              session.nombre = pregunta;
-              respuesta = `¡Hola! Encantado de conocerte. ¿Cómo puedo ayudarte?`;
+              respuesta.push(`¡Hola! Encantado de conocerte. ¿Cómo puedo ayudarte?`);
 
               // Segunda respuesta
               const response = await manager.process('es', pregunta);
-              let message;
               if (response.answer) {
-                message = response.answer
+                respuesta.push(response.answer);
               } else {
                   const result = await pool.query(
                     'SELECT respuesta FROM entrenamiento WHERE $1 = ANY (preguntas) LIMIT 1',
                     [pregunta]
                   );
                   if (result.rows.length > 0) {
-                    message = result.rows[0].respuesta;
+                    respuesta.push(result.rows[0].respuesta);
                   }
               }
               // Segunda respuesta
 
-              return res.status(200).json({ respuesta: [ respuesta, message] });
+              return res.status(200).json({ respuesta });
             }
           } else {
             session.esperandoNombre = true;
-            return res.status(200).json({ respuesta: ['¡Hola! ¿Cuál es tu nombre?'] });
+            respuesta.push(`¡Hola! ¿Cuál es tu nombre para poder comenzar?`);
           }
+
+          for (const item of respuesta) {
+            await pool.query(
+              'INSERT INTO conversaciones (session_id, pregunta, respuesta) VALUES ($1, $2, $3)',
+              [sessionId, pregunta, item]
+            );
+          }
+          
+          return res.status(200).json({ respuesta });
       }
 
       const response = await manager.process('es', pregunta);
 
       if (response.answer) {
-          return res.status(200).json({ respuesta: [response.answer] });
+          respuesta.push(response.answer);
+          // return res.status(200).json({ respuesta: [response.answer] });
       } else {
           const result = await pool.query(
               'SELECT respuesta FROM entrenamiento WHERE $1 = ANY (preguntas) LIMIT 1',
@@ -194,15 +208,25 @@ app.get('/consultar', async (req, res) => {
           );
 
           if (result.rows.length > 0) {
-              return res.status(200).json({ respuesta: [result.rows[0].respuesta] });
+            respuesta.push(result.rows[0].respuesta);
+            // return res.status(200).json({ respuesta: [result.rows[0].respuesta] });
           } else {
             await pool.query(
               'INSERT INTO consultas_no_resueltas (pregunta) VALUES ($1)',
               [pregunta]
             );
-            return res.status(200).json({ respuesta: ['Lo siento, no tengo una respuesta para esa pregunta.'] });
+            respuesta.push('Lo siento, no tengo una respuesta para esa pregunta.');
+            // return res.status(200).json({ respuesta: ['Lo siento, no tengo una respuesta para esa pregunta.'] });
           }
       }
+
+      for (const item of respuesta) {
+        await pool.query(
+          'INSERT INTO conversaciones (session_id, pregunta, respuesta) VALUES ($1, $2, $3)',
+          [sessionId, pregunta, item]
+        );
+      }
+      return res.status(200).json({ respuesta });
   } catch (error) {
       console.error('Error al consultar al bot:', error);
       res.status(500).json({ message: 'Error al consultar al bot' });
@@ -231,7 +255,6 @@ app.get('/variaciones', async (req, res) => {
 
 (async () => {
     try {
-
 
         const data = await getNamedEntities();
        
