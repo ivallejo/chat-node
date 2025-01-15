@@ -192,7 +192,10 @@ app.get('/consultar', async (req, res) => {
                 break;
               }; 
             }
+          } else {
+            response = await managerPresentacion.process('es', pregunta);
           }
+
           if(response) {
             response = response.intent == 'None' ? await managerPresentacion.process('es', pregunta) : response;
 
