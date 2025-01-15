@@ -72,6 +72,48 @@ const generarVariaciones = async (pregunta) => {
   return variaciones;
 };
 
+
+const esSaludo = (texto) =>  {
+  const saludos = [
+    'hola', 'buenos días', 'buenas tardes', 'buenas noches', 'saludos', 'hey', 'hi', 'hello', '¿qué tal?', 
+    '¿cómo estás?', '¿cómo te va?', '¿qué pasa?', 'qué tal', 'qué onda', 'qué hay', 'buenas', 'saluditos', 
+    'bienvenido', 'bienvenida', '¿qué tal?', 'hola qué tal', '¿cómo andas?', 'hey, ¿cómo estás?', 'hola amigo',
+    'buen día', 'buenas tardes a todos', 'buenas noches a todos', 'saludos cordiales', 'hola gente', 
+    '¿cómo te va?', 'qué pasa amigo', '¡ey!', '¡hola hola!', 'buenos días amigo', 'hola ¿cómo estás?', 
+    'hola, ¿qué tal?', 'hola ¿cómo va?', '¿todo bien?', 'qué tal todo', 'buen día, ¿cómo estás?', 
+    'buen día ¿qué tal?', 'buenas, ¿cómo va todo?', 'hey, ¿qué tal?', '¿qué tal todo?', 'hola gente, ¿cómo va?', 
+    'qué hay', '¿qué tal amigo?', 'buenas noches ¿cómo va?', 'saludos amigo', 'hola ¿qué pasa?', 'buenas ¿cómo va?', 
+    'saludos ¿qué tal?', 'buen día ¿qué tal?', 'saludos ¿cómo va?', 'hola ¿qué onda?', 'buenas, ¿qué tal?', 
+    'hola ¿qué pasa?', '¡hey, qué tal!', '¡buenas tardes!', '¡buenas noches!', '¿todo tranquilo?', 'saludos a todos', 
+    'hola, ¿cómo andas?', 'hola ¿qué tal todo?', '¿cómo te encuentras?', '¿todo bien contigo?', '¡buenas!, ¿qué tal?', 
+    '¡hola!, ¿qué pasa?', 'buenas, ¿todo bien?', '¡qué onda!', 'hola ¿cómo va todo?', '¡saludos!, ¿cómo estás?', 
+    '¿qué onda amigo?', '¡hola!, ¿qué tal todo?', '¡buenas!, ¿todo bien?', '¡hola!, ¿cómo andas?', '¿qué tal, amigo?', 
+    '¡saludos! ¿cómo va?', 'hola, ¿todo bien?', 'hola ¿qué tal, todo bien?', '¡buenas!, ¿cómo te va?', '¡hola! ¿cómo va todo?',
+    '¡hola!, ¿todo tranquilo?', '¡hola!, ¿cómo te encuentras?', '¡qué pasa!, ¿todo bien?', '¡saludos!, ¿cómo te va?', 
+    '¡buenas!, ¿cómo estás?', 'hola, ¿cómo te encuentras?', '¡hey!, ¿cómo va?', '¡hola!, ¿qué tal?', 'hola, ¿qué pasa?, todo bien?', 
+    '¡hola! ¿qué tal todo?', '¿cómo va todo?', 'hola, ¿cómo estás tú?', 'buenas, ¿qué tal todo?', '¡hola!, ¿qué tal amigo?', 
+    'hola ¿cómo te va todo?', '¡buenas!, ¿qué pasa?', 'holaa', 'hoolaa', 'holaa amigo', 'holas', 'holii', 'buenas tardesito', 
+    'buennas', 'buenos diass', 'buenass', 'heyy', 'holaa qué tal', 'ke tal', 'ke onda', 'buenos díasss', 'holaaaa', 
+    '¿que tal?', 'holaaa', 'que tall', 'buens', 'ke tal', 'holitas', 'holi', '¿todo bienn?', 'buenass tardes', 
+    'k tal', 'k pasa', 'holaa todo bien', 'que talss', 'quehonda', 'hola ke tal', 'buenass noches', 'holaa amigo',
+    'ola', 'olaa', 'olass', 'ola que tal', 'ola ke tal', 'ola todo bien', 'ola todo bienn', 'holaaa que tal', 'holaaa',
+    'ke tal ola', 'olas ke tal', 'olass amigo', 'olaaa', 'holaaa ke tal', 'hola ola', 'hola olass', 'holaa ¿qué tal?', 
+    'holaaa ¿cómo estás?', 'ola ¿todo bien?', 'qué onda ola', 'ola ¿qué pasa?', 'holas ¿todo bien?', 'holi, ¿cómo vas?',
+    'holita, ¿cómo estás?', 'buenos días, ¿cómo estás?', 'olaa ¿qué tal?', 'hola, ¿todo bien?', 'holas, ¿cómo andas?', 
+    'hola ¿cómo te encuentras?', 'holaa ¿cómo va todo?', 'buenas tardes ¿cómo estás?', 'buenas noches ¿cómo estás?', 
+    'buenos días ¿cómo te va?', 'hey ¿cómo te va?', 'qué tal ¿todo bien?', '¿qué tal, amigo?, ¿todo bien?', 'buenas, ¿cómo va?',
+    '¡hey!, ¿qué tal todo?', 'buenas ¿qué tal todo?', '¡hola!, ¿todo tranquilo?', '¡holaaaa!', 'qué tal ¿todo bien?, amigo',
+    '¡hola! ¿cómo va todo?', '¡buenas!, ¿todo en orden?', '¡hola! ¿qué tal amigo?', '¡buenas!, ¿todo en orden?', 'qué tal, ¿todo bien?',
+    '¡holi! ¿cómo estás?', '¿todo bien? ¡Hola!', '¡hey!, ¿todo bien?', 'buenos días, ¿cómo te va?', '¡hola!, ¿todo bien amigo?',
+    '¡qué tal!, ¿todo bien?', 'holis, ¿cómo va todo?', '¡buenas!, ¿cómo te encuentras?', '¡buenas!, ¿todo en orden?', 'hola ¿todo tranquilo?',
+    'hola ¿cómo va todo?', 'buenas, ¿qué pasa amigo?', '¡hola!, ¿qué tal todo?, ¿todo bien?', '¡saludos!, ¿cómo va todo?', 
+    'hola, ¿todo bien?', 'buenas, ¿cómo va eso?', '¿todo bien?, ¡hola!', 'saludos, ¿cómo va todo?', 'holi, ¿cómo va todo?'
+  ];
+
+  const palabras = texto.toLowerCase().split(/\s+/);
+  return palabras.some(palabra => saludos.includes(palabra));
+}
+
 app.post('/entrenar', async (req, res) => {
     const { preguntas, respuesta, etiqueta, type } = req.body;
 
@@ -132,7 +174,31 @@ app.get('/consultar', async (req, res) => {
   let respuesta = []
   try {
       if(session.esperandoNombre) {
-          const response = await managerPresentacion.process('es', pregunta);
+          const arrPregunta = pregunta.split(' ');
+          let response;
+          let saludo;
+          if ( arrPregunta.length <= 1 ) {
+            for (const pregunta of arrPregunta) {
+              saludo = esSaludo(pregunta);
+              if (saludo) continue;
+              response = await managerPresentacion.process('es', `Me llamo ${pregunta}`);
+              if(response.intent != 'None') {
+                if(response.entities < 0) {
+                  await pool.query(
+                    `INSERT INTO named_entities (entity_type_id, entity_value, language) VALUES (1, $1, 'es')`,
+                    [pregunta]
+                  );
+                }
+                break;
+              }; 
+            }
+          }
+          if(response) {
+            response = response.intent == 'None' ? await managerPresentacion.process('es', pregunta) : response;
+
+          } else {
+            response = await manager.process('es', pregunta)
+          }
 
           let nombre;
           let blnPresentation = false;
@@ -160,9 +226,9 @@ app.get('/consultar', async (req, res) => {
             );
 
             if (nombre) {
-              respuesta.push(`¡Hola, ${nombre}! Encantado de conocerte. ¿Cómo puedo ayudarte?`)
+              respuesta.push(`¡Hola, ${nombre}! Encantado de conocerte. ¿Qué tema te gustaría abordar?`)
             } else {
-              respuesta.push(`¡Hola! Encantado de conocerte. ¿Cómo puedo ayudarte?`);
+              respuesta.push(`¡Hola! Encantado de conocerte. ¿Qué tema te gustaría abordar?`);
 
               // Segunda respuesta
               const response = await manager.process('es', pregunta);
@@ -321,7 +387,7 @@ async function getNamedEntities() {
         e.entity_type_id = t.id
     `;
     const res = await pool.query(query);
-    console.log('Entidades nombradas:', res.rows);
+    // console.log('Entidades nombradas:', res.rows);
     return res.rows;
   } catch (err) {
     console.error('Error al consultar entidades nombradas:', err);
