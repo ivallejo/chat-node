@@ -131,10 +131,24 @@ app.get('/consultar', async (req, res) => {
   try {
       if(session.esperandoNombre) {
           const response = await managerPresentacion.process('es', pregunta);
-          if (response.intent != 'None') {
+
+          let nombre;
+          let blnPresentation = false;
+          if (response.intent == 'None') {
+            const result = await pool.query(
+              `SELECT entity_value FROM named_entities WHERE entity_value like '%${pregunta}%' LIMIT 1`
+            );
+            if (result.rows.length > 0) {
+              nombre = pregunta;
+              blnPresentation = true;
+            }
+          } else {
             const nombreEntity = response.entities.find((entity) => entity.entity === 'nombre');
-            
-            let nombre = nombreEntity?.utteranceText;
+            nombre = nombreEntity?.utteranceText;
+            blnPresentation = true;
+          }
+
+          if (blnPresentation) {
             session.esperandoNombre = false;
             if (nombre) {
               session.nombre = nombre;
