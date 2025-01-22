@@ -141,7 +141,7 @@ app.post('/message', async (req, res) => {
         }, 1000);
     } catch (error) {
         console.error("Error in /message:", error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error });
     }
 });
 
