@@ -110,19 +110,39 @@ app.get('/thread', (req, res) => {
     });
 });
 
-app.post('/message', (req, res) => {
-    const { message, threadId } = req.body;
-    addMessage(threadId, message).then(message => {
-        runAssistant(threadId).then(run => {
-            const runId = run.id;           
+// app.post('/message', (req, res) => {
+//     const { message, threadId } = req.body;
+//     addMessage(threadId, message).then(message => {
+//         runAssistant(threadId).then(run => {
+//             const runId = run.id;           
             
-            pollingInterval = setInterval(() => {
-                checkingStatus(res, threadId, runId);
-            }, 1000);
-        }).catch( ()=> {
-            res.json({ messages: 'No se permiten multiples solicitudes' });
-        });
-    });
+//             pollingInterval = setInterval(() => {
+//                 checkingStatus(res, threadId, runId);
+//             }, 1000);
+//         }).catch( ()=> {
+//             res.json({ messages: 'No se permiten multiples solicitudes' });
+//         });
+//     });
+// });
+
+app.post('/message', async (req, res) => {
+    try {
+        const { message, threadId } = req.body;
+        const addedMessage = await addMessage(threadId, message);
+        const run = await runAssistant(threadId);
+
+        const runId = run.id;
+        pollingInterval = setInterval(() => {
+            checkingStatus(res, threadId, runId).catch((error) => {
+                console.error("Error checking status:", error);
+                clearInterval(pollingInterval);
+                res.status(500).json({ error: "Error checking status" });
+            });
+        }, 1000);
+    } catch (error) {
+        console.error("Error in /message:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 app.get('/message/:threadId', async (req, res) => {
@@ -145,7 +165,7 @@ app.get('/message/:threadId', async (req, res) => {
     res.json({ messages });
 });
 
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
